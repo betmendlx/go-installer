@@ -50,6 +50,7 @@ The script updates your `.bashrc` file with the following environment variables:
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH
+```
 
 Contributing
 If you encounter any issues or have suggestions for improvements, please open an issue or submit a pull request.
