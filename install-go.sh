@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e  # Hentikan jika ada error
+
 # Variables
 GO_VERSION="1.22.5"
 GO_TARBALL="go$GO_VERSION.linux-amd64.tar.gz"
@@ -19,19 +21,29 @@ sudo rm -rf $INSTALL_DIR/go
 echo "Extracting Go $GO_VERSION..."
 sudo tar -C $INSTALL_DIR -xzf $GO_TARBALL
 
-# Add Go environment variables to .bashrc
-echo "Updating environment variables..."
-{
-    echo ''
-    echo '# Go environment variables'
-    echo "export GOROOT=$INSTALL_DIR/go"
-    echo 'export GOPATH=$HOME/go'
-    echo 'export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH'
-} >> $PROFILE_FILE
+# Add Go environment variables to .bashrc if not already present
+if ! grep -q "GOROOT=$INSTALL_DIR/go" "$PROFILE_FILE"; then
+    echo "Updating environment variables..."
+    {
+        echo ''
+        echo '# Go environment variables'
+        echo "export GOROOT=$INSTALL_DIR/go"
+        echo 'export GOPATH=$HOME/go'
+        echo 'export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH'
+    } >> "$PROFILE_FILE"
+fi
 
-# Reload the .bashrc file
+# Apply environment variables in the current shell session
+export GOROOT=$INSTALL_DIR/go
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH
+
+# Remove the downloaded tarball (optional cleanup)
+rm -f "$GO_TARBALL"
+
+# Reload shell to apply changes
 echo "Applying changes..."
-source $PROFILE_FILE
+exec bash  # Restart shell
 
 # Verify the installation
 echo "Verifying the installation..."
